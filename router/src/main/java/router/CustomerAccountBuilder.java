@@ -18,6 +18,10 @@ public class CustomerAccountBuilder extends RouteBuilder{
 
       // routes go here
    
+      
+      //bean method?
+      
+      //create customer account on vend 
    } 
     
 }
