@@ -5,43 +5,79 @@ import java.io.Serializable;
 
 public class Customer implements Serializable {
 
-	private String id;
+    @SerializedName("first_name")
+    private String firstName;
 
-	@SerializedName("customer_group_id")
-	private String group;
+    @SerializedName("last_name")
+    private String lastName;
 
-	private String email;
+    @SerializedName("customer_code")
+    private String customerCode;
 
-	public Customer() {
-	}
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    @SerializedName("customer_group_id")
+    private String group;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private String email;
 
-	public String getEmail() {
-		return email;
-	}
+    public Customer() {
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public String getGroup() {
-		return group;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	public void setGroup(String group) {
-		this.group = group;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	@Override
-	public String toString() {
-		return "Customer{" + "id=" + id + ", group=" + group + ", email=" + email + '}';
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getCustomerCode() {
+        return customerCode;
+    }
+
+    public void setCustomerCode(String customerCode) {
+        this.customerCode = customerCode;
+    }
+
+    
+    
+    
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" + "id=" + id + ", group=" + group + ", email=" + email + '}';
+    }
 
 }
