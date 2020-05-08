@@ -15,7 +15,7 @@ let serviceURI = 'http://localhost:8080/api';
 module.factory('getCustomerApi', function ($resource)
 { return $resource(serviceURI + '/customer'); });
 
-//customer
+//customer 
 module.factory('createCustomerApi', function ($resource) { 
     return $resource(serviceURI + '/customer', 
     null, {update: {method: 'POST'}}); });
@@ -26,6 +26,14 @@ module.factory('createCustomerApiJetty', function ($resource) {
     null, {update: {method: 'POST'}}); });
 
 
-module.controller('CustomerController', function () {
+//customer controller 
+module.controller('CustomerController', function (getCustomerApi, createCustomerApi, createCustomerApiJetty) {
+// save 'this' so we can access it from other scopes 
+ let ctrl = this;
+ 
+ // get all customers and load them into the 'customers' model
+  ctrl.customers = getCustomerApi.query();
+  
+  
 });
 
