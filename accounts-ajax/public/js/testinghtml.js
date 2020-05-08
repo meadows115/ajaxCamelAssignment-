@@ -34,6 +34,14 @@ module.controller('CustomerController', function (getCustomerApi, createCustomer
  // get all customers and load them into the 'customers' model
   ctrl.customers = getCustomerApi.query();
   
+    this.addCustomer = function (customerToAdd){ 
+        createCustomerApiJetty.save({}, customerToAdd, function(){
+            ctrl.customers=getCustomerApi.query();
+        });
+        createCustomerApi.save({},customerToAdd, function(){
+            ctrl.customers=getCustomerApi.query();
+        });
+  };
   
 });
 

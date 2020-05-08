@@ -33,6 +33,16 @@ and open the template in the editor.
         </tr> 
     </tbody> 
 </table>
+<h1>Add a New Customer</h1>
+<fieldset> 
+    <legend>Customer Details</legend> 
+    <form ng-submit="catCtrl.addCustomer(customer)"> 
+        <label>Email:</label> <input type="text" ng-model="customer.email"> 
+        <label>First Name:</label> <input type="text" ng-model="customer.firstName"> 
+        <label>Last Name:</label> <input type="text" ng-model="customer.lastName">
+        <button>Add a new customer</button>
+    </form> 
+</fieldset>
         </div>
     </body>
 </html>
