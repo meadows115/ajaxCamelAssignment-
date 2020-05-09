@@ -4,7 +4,7 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-<html ng-app="CustomersModule">
+<html ng-app="CustomerModule">
     <head>
         <title>Customers</title>
         <meta charset="windows-1252">
@@ -13,36 +13,18 @@ and open the template in the editor.
         <script src="js/angular-resource.min.js"></script>
         <script src="js/testinghtml.js"></script>
     </head>
-    <body>
-        
-        <div ng-controller="CustomersController as catCtrl">
-<h1>Customers</h1>
-<table> 
-    <thead> 
-        <tr> 
-            <th>Email:</th>  
-            <th>First Name:</th> 
-            <th>Last Name:</th>
-        </tr> 
-    </thead> 
-    <tbody> 
-        <tr ng-repeat="customer in catCtrl.customers"> 
-            <td>{{customer.email}}</td>
-            <td>{{customer.firstName}}</td> 
-            <td>{{customer.lastName}}</td> 
-        </tr> 
-    </tbody> 
-</table>
-<h1>Add a New Customer</h1>
-<fieldset> 
-    <legend>Customer Details</legend> 
-    <form ng-submit="catCtrl.addCustomer(customer)"> 
-        <label>Email:</label> <input type="text" ng-model="customer.email"> 
-        <label>First Name:</label> <input type="text" ng-model="customer.firstName"> 
-        <label>Last Name:</label> <input type="text" ng-model="customer.lastName">
-        <button>Add a new customer</button>
-    </form> 
-</fieldset>
+    <body>    
+        <div ng-controller="CustomerController as catCtrl">
+            <h1>Add a New Customer</h1>
+            <fieldset> 
+                <legend>Customer Details</legend> 
+                <form ng-submit="catCtrl.addCustomer(customer)"> 
+                    <label>Email:</label> <input type="text" ng-model="customer.email"> 
+                    <label>First Name:</label> <input type="text" ng-model="customer.firstName"> 
+                    <label>Last Name:</label> <input type="text" ng-model="customer.lastName">
+                    <button>Add a new customer</button>
+                </form> 
+            </fieldset>
         </div>
     </body>
 </html>

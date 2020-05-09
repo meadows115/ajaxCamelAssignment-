@@ -9,20 +9,20 @@
  * Create customer module
  */
 let module = angular.module('CustomerModule', ['ngResource']);
-let serviceURI = 'http://localhost:8080/api';
+let serviceURI = 'http://localhost:8086/api';
 
 
 module.factory('getCustomerApi', function ($resource)
-{ return $resource(serviceURI + '/customer'); });
+{ return $resource(serviceURI + '/accounts'); });
 
 //customer 
 module.factory('createCustomerApi', function ($resource) { 
-    return $resource(serviceURI + '/customer', 
+    return $resource(serviceURI + '/accounts', 
     null, {update: {method: 'POST'}}); });
 
 //jetty using a different port 
 module.factory('createCustomerApiJetty', function ($resource) { 
-    return $resource( 'http://localhost:9000/api'+ '/customer', 
+    return $resource( 'http://localhost:9000/api'+ '/accounts', 
     null, {update: {method: 'POST'}}); });
 
 
@@ -30,9 +30,9 @@ module.factory('createCustomerApiJetty', function ($resource) {
 module.controller('CustomerController', function (getCustomerApi, createCustomerApi, createCustomerApiJetty) {
 // save 'this' so we can access it from other scopes 
  let ctrl = this;
- 
  // get all customers and load them into the 'customers' model
   ctrl.customers = getCustomerApi.query();
+  
   
     this.addCustomer = function (customerToAdd){ 
         createCustomerApiJetty.save({}, customerToAdd, function(){
@@ -41,7 +41,6 @@ module.controller('CustomerController', function (getCustomerApi, createCustomer
         createCustomerApi.save({},customerToAdd, function(){
             ctrl.customers=getCustomerApi.query();
         });
-  };
-  
+  };  
 });
 
