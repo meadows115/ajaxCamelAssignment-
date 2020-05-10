@@ -32,8 +32,16 @@ public class CustomerAccountBuilder extends RouteBuilder {
         from("jms:queue:new-customer-account")
                 .bean(CustomerCreator.class, "createCustomer(${body.firstName},${body.lastName}, ${body.email})")
                 .to("jms:queue:account-for-vend");
-      
-//create customer account on vend : firstname, lastname and email
+
+// route to check that the account is actually showing 
+//from("jms:queue:account-for-vend")
+//  // convert to JSON using marshal method
+//  .marshal().json(JsonLibrary.Gson)
+//  // ensure the message body is a string
+//  .convertBodyTo(String.class)
+//  // send to a queue that expects JSON
+//  .to("jms:queue:json");
+//        
     }
 
 }
