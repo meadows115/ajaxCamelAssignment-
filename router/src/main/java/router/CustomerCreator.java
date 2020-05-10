@@ -14,8 +14,8 @@ import domain.Customer;
  */
 public class CustomerCreator {
 
-    public Account createCustomer(String firstName, String lastName, String email, String group) {
-        Account newCustomerAccount = new Account();
+    public Customer createCustomer(String firstName, String lastName, String email, String group) {
+        Customer newCustomerAccount = new Customer();
         newCustomerAccount.setFirstName(firstName);
         newCustomerAccount.setLastName(lastName);
         newCustomerAccount.setEmail(email);
