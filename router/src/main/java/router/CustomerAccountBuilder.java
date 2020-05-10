@@ -21,16 +21,19 @@ public class CustomerAccountBuilder extends RouteBuilder {
 
         // routes go here
         //bean method?
+        
         //Jetty endpoint to receive the account details from the AJAX client
         // create HTTP endpoint for receiving messages via HTTP
         from("jetty:http://localhost:9000/?enableCORS=true")
                 // make message in-only so web browser doesn't have to wait on a non-existent response
                 .setExchangePattern(ExchangePattern.InOnly)
                 .log("${body}")
-                // convert JSON to domain object
+                // convert JSON to Account object
                 .unmarshal().json(JsonLibrary.Gson, Account.class)
                 .to("jms:queue:customer-account");
-        //create customer account on vend 
+       
+        
+//create customer account on vend 
     }
 
 }
