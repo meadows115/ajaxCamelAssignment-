@@ -18,10 +18,6 @@ public class CustomerAccountBuilder extends RouteBuilder {
 
     @Override
     public void configure() {
-
-        // routes go here
-        //bean method?
-        
         //Jetty endpoint to receive the account details from the AJAX client
         // create HTTP endpoint for receiving messages via HTTP
         from("jetty:http://localhost:9000/?enableCORS=true")
@@ -31,8 +27,12 @@ public class CustomerAccountBuilder extends RouteBuilder {
                 // convert JSON to Account object
                 .unmarshal().json(JsonLibrary.Gson, Account.class)
                 .to("jms:queue:new-customer-account");
-       
-        
+
+        //bean method to convert account into customer so compatible with Vend
+        from("jms:queue:new-customer-account")
+                .bean(CustomerCreator.class, "createCustomer(${body.firstName},${body.lastName}, ${body.email})")
+                .to("jms:queue:account-for-vend");
+      
 //create customer account on vend : firstname, lastname and email
     }
 

@@ -16,9 +16,9 @@ module.factory('getCustomerApi', function ($resource)
 { return $resource(serviceURI + '/accounts'); });
 
 //customer 
-module.factory('createCustomerApi', function ($resource) { 
-    return $resource(serviceURI + '/accounts', 
-    null, {update: {method: 'POST'}}); });
+//module.factory('createCustomerApi', function ($resource) { 
+//    return $resource(serviceURI + '/accounts', 
+//    null, {update: {method: 'POST'}}); });
 
 //jetty using a different port -this might be the only POST that is needed? 
 module.factory('createCustomerApiJetty', function ($resource) { 
@@ -27,7 +27,7 @@ module.factory('createCustomerApiJetty', function ($resource) {
 
 
 //customer controller 
-module.controller('CustomerController', function (getCustomerApi, createCustomerApi, createCustomerApiJetty) {
+module.controller('CustomerController', function (getCustomerApi,createCustomerApiJetty) {
 // save 'this' so we can access it from other scopes 
  let ctrl = this;
  // get all customers and load them into the 'customers' model
@@ -36,9 +36,9 @@ module.controller('CustomerController', function (getCustomerApi, createCustomer
         createCustomerApiJetty.save({}, customerToAdd, function(){
             ctrl.customers=getCustomerApi.query();
         });
-        createCustomerApi.save({},customerToAdd, function(){
-            ctrl.customers=getCustomerApi.query();
-        });
+//        createCustomerApi.save({},customerToAdd, function(){
+//            ctrl.customers=getCustomerApi.query();
+//        });
   };  
 });
 
