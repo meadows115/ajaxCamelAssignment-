@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import org.jooby.Jooby;
 import org.jooby.Results;
+import org.jooby.handlers.Cors;
+import org.jooby.handlers.CorsHandler;
 
 public class Server extends Jooby {
 
@@ -11,6 +13,7 @@ public class Server extends Jooby {
 		assets("/**");
 		assets("/", "index.html");
 		get("/favicon.ico", () -> Results.noContent());
+                use("*", new CorsHandler(new Cors().withMethods("*")));
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -19,6 +22,7 @@ public class Server extends Jooby {
 		server.port(7081);
 
 		CompletableFuture.runAsync(() -> {
+                   
 			server.start();
 		});
 

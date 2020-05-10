@@ -22,7 +22,7 @@ module.factory('createCustomerApi', function ($resource) {
 
 //jetty using a different port -this might be the only POST that is needed? 
 module.factory('createCustomerApiJetty', function ($resource) { 
-    return $resource( 'http://localhost:9000/api'+ '/customers', 
+    return $resource( 'http://localhost:9000',
     null, {update: {method: 'POST'}}); });
 
 
@@ -32,8 +32,6 @@ module.controller('CustomerController', function (getCustomerApi, createCustomer
  let ctrl = this;
  // get all customers and load them into the 'customers' model
   ctrl.customers = getCustomerApi.query();
-  
-  
     this.addCustomer = function (customerToAdd){ 
         createCustomerApiJetty.save({}, customerToAdd, function(){
             ctrl.customers=getCustomerApi.query();

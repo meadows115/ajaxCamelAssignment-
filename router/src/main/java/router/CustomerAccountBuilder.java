@@ -30,10 +30,10 @@ public class CustomerAccountBuilder extends RouteBuilder {
                 .log("${body}")
                 // convert JSON to Account object
                 .unmarshal().json(JsonLibrary.Gson, Account.class)
-                .to("jms:queue:customer-account");
+                .to("jms:queue:new-customer-account");
        
         
-//create customer account on vend 
+//create customer account on vend : firstname, lastname and email
     }
 
 }

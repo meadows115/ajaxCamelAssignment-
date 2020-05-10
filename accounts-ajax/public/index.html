@@ -19,9 +19,10 @@ and open the template in the editor.
             <fieldset> 
                 <legend>Customer Details</legend> 
                 <form ng-submit="catCtrl.addCustomer(customer)"> 
+                     <label>Email:</label> <input type="text" ng-model="customer.email"> 
+                      <label>User Name:</label> <input type="text" ng-model="customer.username"> 
                     <label>First Name:</label> <input type="text" ng-model="customer.firstName"> 
                     <label>Last Name:</label> <input type="text" ng-model="customer.lastName">
-                    <label>Email:</label> <input type="text" ng-model="customer.email"> 
                     <button>Add a new customer</button>
                 </form> 
             </fieldset>
