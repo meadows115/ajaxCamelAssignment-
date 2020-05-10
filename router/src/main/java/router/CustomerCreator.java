@@ -5,6 +5,7 @@
  */
 package router;
 
+import domain.Account;
 import domain.Customer;
 
 /**
@@ -12,7 +13,13 @@ import domain.Customer;
  * @author nikki
  */
 public class CustomerCreator {
-  public Customer createCustomer(String firstName, String lastName, String email){ 
-            return new Customer(firstName, lastName, email);
+
+    public Account createCustomer(String firstName, String lastName, String email, String group) {
+        Account newCustomerAccount = new Account();
+        newCustomerAccount.setFirstName(firstName);
+        newCustomerAccount.setLastName(lastName);
+        newCustomerAccount.setEmail(email);
+        newCustomerAccount.setGroup("0afa8de1-147c-11e8-edec-2b197906d816");
+        return newCustomerAccount;
     }
 }

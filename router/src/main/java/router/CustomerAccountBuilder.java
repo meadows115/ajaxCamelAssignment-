@@ -6,6 +6,7 @@
 package router;
 
 import domain.Account;
+import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
@@ -31,7 +32,7 @@ public class CustomerAccountBuilder extends RouteBuilder {
         //bean method to convert account into customer so compatible with Vend
         from("jms:queue:new-customer-account")
                 .bean(CustomerCreator.class, "createCustomer(${body.firstName},${body.lastName}, ${body.email})")
-                .to("jms:queue:account-for-vend");
+                .to("jms:queue:send-to-vend");
 
 // route to check that the account is actually showing 
 //from("jms:queue:account-for-vend")
@@ -41,7 +42,21 @@ public class CustomerAccountBuilder extends RouteBuilder {
 //  .convertBodyTo(String.class)
 //  // send to a queue that expects JSON
 //  .to("jms:queue:json");
-//        
+//   
+        //send the message to vend and catch response in another queue
+        from("jms:queue:send-to-vend")
+                // remove headers so they don't get sent to Vend
+                .removeHeaders("*")
+                // add authentication token to authorization header
+                .setHeader("Authorization", constant("Bearer KiQSsELLtocyS2WDN5w5s_jYaBpXa0h2ex1mep1a"))
+                // marshal to JSON
+                .marshal().json(JsonLibrary.Gson) // only necessary if the message is an object, not JSON
+                .setHeader(Exchange.CONTENT_TYPE).constant("application/json")
+                // set HTTP method
+                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+                // send it
+                .to("https://info303otago.vendhq.com/api/2.0/customers")
+                // store the response
+                .to("jms:queue:vend-response");
     }
-
 }
