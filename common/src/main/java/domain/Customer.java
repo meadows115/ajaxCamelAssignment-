@@ -47,9 +47,6 @@ public class Customer implements Serializable {
     public void setCustomerCode(String customerCode) {
         this.customerCode = customerCode;
     }
-
-    
-    
     
     public String getId() {
         return id;

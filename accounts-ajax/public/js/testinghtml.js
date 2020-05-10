@@ -20,7 +20,7 @@ module.factory('createCustomerApi', function ($resource) {
     return $resource(serviceURI + '/accounts', 
     null, {update: {method: 'POST'}}); });
 
-//jetty using a different port 
+//jetty using a different port -this might be the only POST that is needed? 
 module.factory('createCustomerApiJetty', function ($resource) { 
     return $resource( 'http://localhost:9000/api'+ '/accounts', 
     null, {update: {method: 'POST'}}); });

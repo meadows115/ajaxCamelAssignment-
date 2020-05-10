@@ -18,6 +18,7 @@ public class Router {
 
 		// transfer the entire exchange, or just the body and headers?
 		jmsComponent.setTransferExchange(true);
+                
 
 		// trust all classes being used to send serialised domain objects
 		activeMqFactory.setTrustAllPackages(true);
