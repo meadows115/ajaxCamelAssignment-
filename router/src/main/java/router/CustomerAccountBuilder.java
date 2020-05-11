@@ -6,6 +6,7 @@
 package router;
 
 import domain.Account;
+import domain.Customer;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
@@ -63,9 +64,15 @@ public class CustomerAccountBuilder extends RouteBuilder {
         from("jms:queue:vend-response")
                 .setBody().jsonpath("$.data")
                 .marshal().json(JsonLibrary.Gson)
+                // convert JSON to Customer object
+                .unmarshal().json(JsonLibrary.Gson, Customer.class)
                 .to("jms:queue:extracted-vend-response");
-        //convert customer into an account
-
+        
+        //convert customer object into an account object
+        from("jms:queue:extracted-vend-response")
+                .bean(DomainConverter.class, "customerToAccount(${body})")
+                .to("jms:queue:account-object");
+       
         //marshall the account back into json and send to account service 
     }
 }

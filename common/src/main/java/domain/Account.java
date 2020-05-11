@@ -1,9 +1,11 @@
 package domain;
 
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class Account implements Serializable {
 
+        @SerializedName("id")
 	private String id;
 	private String email;
 	private String username;
@@ -15,15 +17,25 @@ public class Account implements Serializable {
 	public Account() {
 	}
 
-	public Account(String id, String email, String username, String firstName, String lastName, String group) {
-		this.id = id;
-		this.email = email;
-		this.username = username;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.group = group;
-	}
+    public Account(String id, String email, String firstName, String lastName, String group) {
+        this.id = id;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.group = group;
+    }
 
+
+    public Account(String id, String email, String username, String firstName, String lastName, String group) {
+        this.id = id;
+        this.email = email;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.group = group;
+    }
+
+        
 	public String getEmail() {
 		return email;
 	}
