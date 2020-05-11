@@ -74,5 +74,14 @@ public class CustomerAccountBuilder extends RouteBuilder {
                 .to("jms:queue:account-object");
        
         //marshall the account back into json and send to account service 
+        from("jms:queue:account-object")
+                //convert into json
+                .marshal().json(JsonLibrary.Gson)
+                //send to accounts service queue
+                .to("jms:queue:account-service");
+        
+        //send to the accounts service local host
+     //   from("jms:queue:account-service")
+      //  .to("http://localhost:8086");
     }
 }
