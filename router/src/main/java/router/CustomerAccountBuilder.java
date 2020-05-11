@@ -81,7 +81,7 @@ public class CustomerAccountBuilder extends RouteBuilder {
                 .to("jms:queue:account-service");
         
         //send to the accounts service local host
-     //   from("jms:queue:account-service")
-      //  .to("http://localhost:8086");
+        from("jms:queue:account-service")
+        .to("http://localhost:8086/api/accounts");
     }
 }
