@@ -92,4 +92,10 @@ public class Account implements Serializable {
 		this.username = username;
 	}
 
+    @Override
+    public String toString() {
+        return "Account{" + "id=" + id + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName + ", group=" + group + '}';
+    }
+        
+
 }
