@@ -32,8 +32,10 @@ public class Router {
 
 		// create and add the builder(s)
 		camel.addRoutes(new CustomerAccountBuilder());
-		//camel.addRoutes(new CustomerSaleBuider());
+		camel.addRoutes(new CustomerSaleBuilder());
 
+                
+                
 		// start routing
 		System.out.println("Starting router...");
 		camel.start();
