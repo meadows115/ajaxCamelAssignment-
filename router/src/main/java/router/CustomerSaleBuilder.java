@@ -64,8 +64,12 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 // set HTTP method
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 // send it
-                .to("http://localhost:8081/api/sales");
-              //  .to("jms:queue:sales-service");
+                .to("http://localhost:8081/api/sales")
+                .to("jms:queue:sales-service");
+        
+         //Retrieve the customer’s sales summary from the phase 1 sales service. 
+         from("")
+                 .to("");
     }
 
     //method to prompt for a password using the dialog box
