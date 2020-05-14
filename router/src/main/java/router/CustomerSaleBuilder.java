@@ -9,6 +9,7 @@ import domain.Customer;
 import domain.Sale;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 
@@ -52,8 +53,19 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 // convert JSON to Sale object
                 .unmarshal().json(JsonLibrary.Gson, Sale.class)
                 .to("jms:queue:sales-java-objects");
-        
-        
+
+        //Create a sale on the phase 1 sales service.
+        from("jms:queue:sales-java-objects")
+                // remove headers
+                .removeHeaders("*")
+                // marshal to JSON
+                .marshal().json(JsonLibrary.Gson) // only necessary if the message is an object, not JSON
+                .setHeader(Exchange.CONTENT_TYPE).constant("application/json")
+                // set HTTP method
+                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+                // send it
+                .to("http://localhost:8081/api/sales");
+              //  .to("jms:queue:sales-service");
     }
 
     //method to prompt for a password using the dialog box
