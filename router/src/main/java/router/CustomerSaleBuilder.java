@@ -7,6 +7,7 @@ package router;
 
 import domain.Customer;
 import domain.Sale;
+import domain.Summary;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import org.apache.camel.Exchange;
@@ -68,8 +69,15 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 .to("jms:queue:sales-service");
         
          //Retrieve the customer’s sales summary from the phase 1 sales service. 
-         from("")
-                 .to("");
+         from("http://localhost:8081/api/sales")
+                 .unmarshal().json(JsonLibrary.Gson, Summary.class)
+                 .to("jms:queue:customer-sales-summary");
+         
+         //extract the group from the sales summary
+         from("jms:queue:customer-sales-summary")
+                 .marshal().json(JsonLibrary.Gson)
+                 //.setHeader("group").jsonpath("$.customer.customer_group_id")
+                 .to("jms:queue:customer-summary-group");
     }
 
     //method to prompt for a password using the dialog box
