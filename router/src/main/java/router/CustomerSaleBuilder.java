@@ -5,6 +5,7 @@
  */
 package router;
 
+import domain.Customer;
 import domain.Sale;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -39,13 +40,22 @@ public class CustomerSaleBuilder extends RouteBuilder {
 
         //extract the customers group, id, first name, last name and email
         from("jms:queue:vend-new-sale")
-              .setHeader("group").jsonpath("$.customer.customer_group_id")  // extract ID from JSON, and store in header 
-              .setHeader("firstName").jsonpath("$.customer.first_name") // same for name 
-              .setHeader("lastName").jsonpath("$.customer.last_name") 
-              .setHeader("email").jsonpath("$.customer.email")
-              .setHeader("id").jsonpath("$.customer.id") 
-              .to("jms:queue:extracted-properties");
+                .setHeader("group").jsonpath("$.customer.customer_group_id") // extract ID from JSON, and store in header 
+                .setHeader("firstName").jsonpath("$.customer.first_name") // same for name 
+                .setHeader("lastName").jsonpath("$.customer.last_name")
+                .setHeader("email").jsonpath("$.customer.email")
+                .setHeader("id").jsonpath("$.customer.id")
+                .to("jms:queue:extracted-properties");
+
+        //convert the JSON payload into Java objects that are compatible with the sales service.
+        from("jms:queue:extracted-properties")
+                // convert JSON to Sale object
+                .unmarshal().json(JsonLibrary.Gson, Sale.class)
+                .to("jms:queue:sales-java-objects");
+        
+        
     }
+
     //method to prompt for a password using the dialog box
     public static String getPassword(String prompt) {
         JPasswordField txtPasswd = new JPasswordField();

@@ -36,6 +36,7 @@ public class Router {
 
                 
                 
+                
 		// start routing
 		System.out.println("Starting router...");
 		camel.start();
