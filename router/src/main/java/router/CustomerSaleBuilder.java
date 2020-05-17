@@ -104,21 +104,21 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 .to("jms:queue:update-customer-group");
 
         from("jms:queue:update-customer-group")
-                .bean(UpdateCustomerCreator.class, "updateAccount($exchangeProperty.id, ${exchangeProperty.email},${exchangeProperty.firstName}, ${exchangeProperty.lastName})")
+                .bean(UpdateCustomerCreator.class, "updateAccount(${exchangeProperty.id}, ${exchangeProperty.email},${exchangeProperty.firstName}, ${exchangeProperty.lastName})")
                 .multicast()
                 .to("jms:queue:updated-customer-account", "jms:queue:update-for-vend");
         
         
         //if the group has changed, needs to be updated customer accounts service
         from("jms:queue:updated-customer-account")
-                // remove headers
-                .removeHeaders("*")
                 // marshal to JSON
                 .marshal().json(JsonLibrary.Gson)
-                .setHeader(Exchange.CONTENT_TYPE).constant("application/json")
+                // remove headers
+                .removeHeaders("*")
                 // set HTTP method
                 .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
-                .to("http://localhost:8086/api/accounts/account/${exchangeProperty.id}")
+                .setHeader(Exchange.CONTENT_TYPE).constant("application/json")
+                .toD("http://localhost:8086/api/accounts/account/${exchangeProperty.id}")
                 .to("jms:queue:customer-account-updated");
 
         //updated account needs to be updated on Vend
