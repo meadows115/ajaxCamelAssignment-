@@ -81,12 +81,12 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 .toD("http://localhost:8081/api/sales/customer/${exchangeProperty.summary-customer-id}/summary")
                 .setProperty("cust-id").simple("${exchangeProperty.summary-customer-id}")
                 .to("jms:queue:customer-sales-summary");
-//         
+         
 //         //extract the group from the sales summary
-//         from("jms:queue:customer-sales-summary")
-//                 .marshal().json(JsonLibrary.Gson)
-//                 //.setHeader("group").jsonpath("$.customer.customer_group_id")
-//                 .to("jms:queue:customer-summary-group");
+         from("jms:queue:customer-sales-summary")
+               //  .marshal().json(JsonLibrary.Gson)
+                 .setHeader("group").jsonpath("$.group")
+                 .to("jms:queue:customer-summary-group");
     }
 
     //method to prompt for a password using the dialog box
