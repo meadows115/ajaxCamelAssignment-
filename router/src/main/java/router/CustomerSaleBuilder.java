@@ -67,17 +67,26 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 // send it
                 .to("http://localhost:8081/api/sales")
                 .to("jms:queue:sales-service");
-        
-         //Retrieve the customer’s sales summary from the phase 1 sales service. 
-         from("http://localhost:8081/api/sales")
-                 .unmarshal().json(JsonLibrary.Gson, Summary.class)
-                 .to("jms:queue:customer-sales-summary");
-         
-         //extract the group from the sales summary
-         from("jms:queue:customer-sales-summary")
-                 .marshal().json(JsonLibrary.Gson)
-                 //.setHeader("group").jsonpath("$.customer.customer_group_id")
-                 .to("jms:queue:customer-summary-group");
+
+        //Retrieve ("get") the customer’s sales summary from the phase 1 sales service. 
+        from("jms:queue:sales-service")
+                // remove headers
+                .removeHeaders("*")
+                // remove message body since you can't send a body in a GET or DELETE
+                //.setBody(constant(null))
+                .setProperty("summary-customer-id").jsonpath("$.customer.id")
+                // set HTTP method
+                .setHeader(Exchange.HTTP_METHOD, constant("GET"))
+                //dynamic end point using simple expression language
+                .toD("http://localhost:8081/api/sales/customer/${exchangeProperty.summary-customer-id}/summary")
+                .setProperty("cust-id").simple("${exchangeProperty.summary-customer-id}")
+                .to("jms:queue:customer-sales-summary");
+//         
+//         //extract the group from the sales summary
+//         from("jms:queue:customer-sales-summary")
+//                 .marshal().json(JsonLibrary.Gson)
+//                 //.setHeader("group").jsonpath("$.customer.customer_group_id")
+//                 .to("jms:queue:customer-summary-group");
     }
 
     //method to prompt for a password using the dialog box
