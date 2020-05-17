@@ -24,21 +24,21 @@ public class CustomerSaleBuilder extends RouteBuilder {
     public void configure() {
 
         // get Camel to look in my student email account for vend emails
-//        from("imaps://outlook.office365.com?username=meani898@student.otago.ac.nz"
-//                + "&password=" + getPassword("Enter your E-Mail password")
-//                + "&searchTerm.subject=Vend:SaleUpdate"
-//                + "&debugMode=false" // set to true if you want to see the authentication details
-//                + "&folderName=INBOX") // change to whatever folder your Vend messages end up in
-//                .convertBodyTo(String.class)
-//                .log("${body}")
-//                .to("jms:queue:vend-new-sale");
-        from("imap://localhost?username=test@localhost"
-                + "&port=3143"
-                + "&password=password"
-                + "&consumer.delay=5000"
-                + "&searchTerm.subject=Vend:SaleUpdate")
-                .log("Found new E-Mail: ${body}")
+        from("imaps://outlook.office365.com?username=meani898@student.otago.ac.nz"
+                + "&password=" + getPassword("Enter your E-Mail password")
+                + "&searchTerm.subject=Vend:SaleUpdate"
+                + "&debugMode=false" // set to true if you want to see the authentication details
+                + "&folderName=INBOX") // change to whatever folder your Vend messages end up in
+                .convertBodyTo(String.class)
+                .log("${body}")
                 .to("jms:queue:vend-new-sale");
+//        from("imap://localhost?username=test@localhost"
+//                + "&port=3143"
+//                + "&password=password"
+//                + "&consumer.delay=5000"
+//                + "&searchTerm.subject=Vend:SaleUpdate")
+//                .log("Found new E-Mail: ${body}")
+//                .to("jms:queue:vend-new-sale");
 
         //extract the customers group, id, first name, last name and email
         from("jms:queue:vend-new-sale")
@@ -93,7 +93,7 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 .setProperty("groupcustomer").method(GroupCalculator.class,
                 "calculateGroup(${exchangeProperty.group})")
                 .to("jms:queue:calculated-group");
-        
+
         //compare the calculated group with the current group to see if its changed
         from("jms:queue:calculated-group")
                 .unmarshal().json(JsonLibrary.Gson, Summary.class)
@@ -101,7 +101,23 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 .when().simple("${exchangeProperty.groupcustomer} == ${exchangeProperty.custgroup}")
                 .to("jms:queue:no-update-customer-group")
                 .otherwise()
-                .to("jms:queue:update-customer-group");      
+                .to("jms:queue:update-customer-group");
+
+        //if the group has changed, needs to be updated for vend and on customer accounts service
+//        from("jms:queue:update-customer-group")
+//                // remove headers so they don't get sent to Vend
+//                .removeHeaders("*")
+//                // add authentication token to authorization header
+//                .setHeader("Authorization", constant("Bearer KiQSsELLtocyS2WDN5w5s_jYaBpXa0h2ex1mep1a"))
+//                // marshal to JSON
+//                .marshal().json(JsonLibrary.Gson) // only necessary if the message is an object, not JSON
+//                .setHeader(Exchange.CONTENT_TYPE).constant("application/json")
+//                // set HTTP method
+//                .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
+//                // send it
+//                .to("https://info303otago.vendhq.com/api/2.0/customers/${exchangeProperty.customer.id}")
+//                // store the response
+//                .to("jms:queue:vend-up date-response");
     }
 
     //method to prompt for a password using the dialog box
