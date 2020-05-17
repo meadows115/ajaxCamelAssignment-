@@ -42,11 +42,11 @@ public class CustomerSaleBuilder extends RouteBuilder {
 
         //extract the customers group, id, first name, last name and email
         from("jms:queue:vend-new-sale")
-                .setHeader("group").jsonpath("$.customer.customer_group_id") // extract ID from JSON, and store in header 
-                .setHeader("firstName").jsonpath("$.customer.first_name") // same for name 
-                .setHeader("lastName").jsonpath("$.customer.last_name")
-                .setHeader("email").jsonpath("$.customer.email")
-                .setHeader("id").jsonpath("$.customer.id")
+                .setProperty("custgroup").jsonpath("$.customer.customer_group_id") // extract ID from JSON, and store in header 
+                .setProperty("firstName").jsonpath("$.customer.first_name") // same for name 
+                .setProperty("lastName").jsonpath("$.customer.last_name")
+                .setProperty("email").jsonpath("$.customer.email")
+                .setProperty("id").jsonpath("$.customer.id")
                 .to("jms:queue:extracted-properties");
 
         //convert the JSON payload into Java objects that are compatible with the sales service.
@@ -60,7 +60,7 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 // remove headers
                 .removeHeaders("*")
                 // marshal to JSON
-                .marshal().json(JsonLibrary.Gson) // only necessary if the message is an object, not JSON
+                .marshal().json(JsonLibrary.Gson)
                 .setHeader(Exchange.CONTENT_TYPE).constant("application/json")
                 // set HTTP method
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
@@ -81,12 +81,27 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 .toD("http://localhost:8081/api/sales/customer/${exchangeProperty.summary-customer-id}/summary")
                 .setProperty("cust-id").simple("${exchangeProperty.summary-customer-id}")
                 .to("jms:queue:customer-sales-summary");
-         
-//         //extract the group from the sales summary
-         from("jms:queue:customer-sales-summary")
-               //  .marshal().json(JsonLibrary.Gson)
-                 .setHeader("group").jsonpath("$.group")
-                 .to("jms:queue:customer-summary-group");
+
+        //extract the group from the sales summary
+        from("jms:queue:customer-sales-summary")
+                //  .marshal().json(JsonLibrary.Gson)
+                .setProperty("group").jsonpath("$.group") //at this point the group is Regular Customers
+                .to("jms:queue:customer-summary-group");
+
+        //change the group name into the vend group ID
+        from("jms:queue:customer-summary-group")
+                .setProperty("groupcustomer").method(GroupCalculator.class,
+                "calculateGroup(${exchangeProperty.group})")
+                .to("jms:queue:calculated-group");
+        
+        //compare the calculated group with the current group to see if its changed
+        from("jms:queue:calculated-group")
+                .unmarshal().json(JsonLibrary.Gson, Summary.class)
+                .choice()
+                .when().simple("${exchangeProperty.groupcustomer} == ${exchangeProperty.custgroup}")
+                .to("jms:queue:no-update-customer-group")
+                .otherwise()
+                .to("jms:queue:update-customer-group");      
     }
 
     //method to prompt for a password using the dialog box
