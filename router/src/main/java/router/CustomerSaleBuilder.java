@@ -92,10 +92,10 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 .unmarshal().json(JsonLibrary.Gson, Summary.class)
                 .choice()
                 .when().simple("${body.group} == ${exchangeProperty.groupcustomer}")
-                    .log("The group has not changed: ${body.group} == ${exchangeProperty.groupcustomer}")
+                    .log("The customer group has not changed: ${body.group} == ${exchangeProperty.groupcustomer}")
                     .to("jms:queue:no-update-customer-group")
                 .otherwise()
-                .log("The group has changed: ${body.group} != ${exchangeProperty.groupcustomer}")
+                .log("The customer group has changed: ${body.group} != ${exchangeProperty.groupcustomer}")
                 .to("jms:queue:update-customer-group");
                          
 //
