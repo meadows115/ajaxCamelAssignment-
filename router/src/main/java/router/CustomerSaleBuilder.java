@@ -74,37 +74,42 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 // remove headers
                 .removeHeaders("*")
                 // remove message body since you can't send a body in a GET or DELETE
-                .setBody(constant(null))
+                //.setBody(constant(null))
                 // set HTTP method
                 .setHeader(Exchange.HTTP_METHOD, constant("GET"))
                 //dynamic end point using simple expression language
                 .toD("http://localhost:8081/api/sales/customer/${exchangeProperty.id}/summary")
+                .setProperty("summarygroup").jsonpath("$.group")
                 .to("jms:queue:customer-sales-summary");
+                
 
-        //change the group name into the vend group ID
+//        //change the group name into the vend group ID
         from("jms:queue:customer-sales-summary")
+                .log("step 3 - ${body}")
                 .setProperty("groupcustomer").method(GroupCalculator.class,
-                "calculateGroup(${exchangeProperty.custgroup})")
+                "calculateGroup(${exchangeProperty.summarygroup})")
+                .log("step 4 - ${body}")
                 .to("jms:queue:calculated-group");
-  
-          //compare the calculated group with the current group to see if its changed
+//  
+//          //compare the calculated group with the current group to see if its changed
             from("jms:queue:calculated-group")   
                 .unmarshal().json(JsonLibrary.Gson, Summary.class)
                 .choice()
-                .when().simple("${body.group} == ${exchangeProperty.groupcustomer}")
+                .when().simple("${exchangeProperty.custgroup} == ${exchangeProperty.groupcustomer}")
                     .log("The customer group has not changed: ${body.group} == ${exchangeProperty.groupcustomer}")
                     .to("jms:queue:no-update-customer-group")
                 .otherwise()
-                .log("The customer group has changed: ${body.group} != ${exchangeProperty.groupcustomer}")
+                .log("The customer group has changed: ${exchangeProperty.custgroup} != ${exchangeProperty.groupcustomer}")
                 .to("jms:queue:update-customer-group");
-                         
-//
+//                         
+////
         from("jms:queue:update-customer-group")
-               .bean(UpdateCustomerCreator.class, "updateAccount(${exchangeProperty.id}, ${exchangeProperty.email},${exchangeProperty.firstName}, ${exchangeProperty.lastName}, ${exchangeProperty.custgroup})")
+               .bean(UpdateCustomerCreator.class, "updateAccount(${exchangeProperty.id}, ${exchangeProperty.email},${exchangeProperty.firstName}, ${exchangeProperty.lastName})")
               .multicast()
+                .log("step 5 - ${body}")
                 .to("jms:queue:updated-customer-account", "jms:queue:update-for-vend");
    
-        //if the group has changed, needs to be updated customer accounts service
+//        //if the group has changed, needs to be updated customer accounts service
         from("jms:queue:updated-customer-account")
                 // marshal to JSON
                 .marshal().json(JsonLibrary.Gson)
@@ -113,7 +118,9 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 // set HTTP method
                 .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
                 .setHeader(Exchange.CONTENT_TYPE).constant("application/json")
+                .log("step 6 - ${body}") //works up until HERE
                 .toD("http://localhost:8086/api/accounts/account/${exchangeProperty.id}")
+                .log("step 7 - ${body}")
                 .to("jms:queue:customer-account-updated");
 
         //updated account needs to be updated on Vend
