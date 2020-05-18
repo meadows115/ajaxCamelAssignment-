@@ -60,7 +60,6 @@ public class CustomerAccountBuilder extends RouteBuilder {
                 // store the response
                 .to("jms:queue:vend-response");
 
-        //extract the customer data and unmarshall into a customer object
         from("jms:queue:vend-response")
                 .setBody().jsonpath("$.data")
                 .marshal().json(JsonLibrary.Gson)
