@@ -16,10 +16,10 @@ public class GroupCalculator {
         String VIP="0afa8de1-147c-11e8-edec-201e0f00872c";
         String regular= "0afa8de1-147c-11e8-edec-2b197906d816";
         
-        if(group.equals("VIP Customers")){
-        return VIP;
+        if(group.equals("0afa8de1-147c-11e8-edec-201e0f00872c")){
+        return "VIP Customers";
         } else{
-        return regular;
+        return "Regular Customers";
         }       
     }
 }

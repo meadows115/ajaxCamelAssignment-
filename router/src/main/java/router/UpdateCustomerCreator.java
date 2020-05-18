@@ -13,7 +13,7 @@ import domain.Account;
  */
 public class UpdateCustomerCreator {
    
-    public Account updateAccount(String id, String email, String firstName, String lastName){
+    public Account updateAccount(String id, String email, String firstName, String lastName, String group){
         Account updateCustomerAccount=new Account();
         updateCustomerAccount.setId(id);
         updateCustomerAccount.setEmail(email);
