@@ -122,7 +122,7 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 .to("jms:queue:customer-account-updated");
 
         //updated account needs to be updated on Vend
-//        from("jms:queue:updated-customer-account")
+//        from("jms:queue:update-for-vend")
 //                // remove headers so they don't get sent to Vend
 //                .removeHeaders("*")
 //                // add authentication token to authorization header
