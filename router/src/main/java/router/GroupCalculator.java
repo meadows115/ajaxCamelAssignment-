@@ -10,17 +10,13 @@ package router;
  * @author nikki
  */
 public class GroupCalculator {
-    
-    public String calculateGroup (String group){
-        
-        String VIP="0afa8de1-147c-11e8-edec-201e0f00872c";
-        String regular= "0afa8de1-147c-11e8-edec-2b197906d816";
-        
-        if(group.equals("Regular Customers")){
-        return "0afa8de1-147c-11e8-edec-2b197906d816";
-        } else{
-        return "0afa8de1-147c-11e8-edec-201e0f00872c";
-        }       
+
+    public String calculateGroup(String group) {
+
+        if (group.equals("Regular Customers")) {
+            return "0afa8de1-147c-11e8-edec-2b197906d816";
+        } else {
+            return "0afa8de1-147c-11e8-edec-201e0f00872c";
+        }
     }
 }
-

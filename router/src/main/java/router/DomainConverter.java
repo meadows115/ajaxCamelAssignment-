@@ -10,12 +10,11 @@ import domain.Customer;
 
 /**
  *
- * @author nikki
- * Class to convert customer into account object
+ * @author nikki Class to convert customer into account object
  */
 public class DomainConverter {
-    
-    public Account customerToAccount(Customer customer){
-        return new Account(customer.getId(),customer.getEmail(), customer.getFirstName(),customer.getLastName(),customer.getGroup());
+
+    public Account customerToAccount(Customer customer) {
+        return new Account(customer.getId(), customer.getEmail(), customer.getFirstName(), customer.getLastName(), customer.getGroup());
     }
 }

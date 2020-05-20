@@ -12,9 +12,9 @@ import domain.Account;
  * @author nikki
  */
 public class UpdateCustomerCreator {
-   
-    public Account updateAccount(String id, String email, String firstName, String lastName, String group){
-        Account updateCustomerAccount=new Account();
+
+    public Account updateAccount(String id, String email, String firstName, String lastName, String group) {
+        Account updateCustomerAccount = new Account();
         updateCustomerAccount.setId(id);
         updateCustomerAccount.setEmail(email);
         updateCustomerAccount.setFirstName(firstName);

@@ -5,8 +5,6 @@
  */
 package router;
 
-import domain.Account;
-import domain.Customer;
 import domain.Sale;
 import domain.Summary;
 import javax.swing.JOptionPane;
@@ -33,6 +31,7 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 .convertBodyTo(String.class)
                 .log("${body}")
                 .to("jms:queue:vend-new-sale");
+        //mock mail server for testing
 //        from("imap://localhost?username=test@localhost"
 //                + "&port=3143"
 //                + "&password=password"
@@ -84,10 +83,8 @@ public class CustomerSaleBuilder extends RouteBuilder {
 
         //change the group name into the vend group ID
         from("jms:queue:customer-sales-summary")
-                .log("step 3 - ${body}")
                 .setProperty("groupcustomer").method(GroupCalculator.class,
                 "calculateGroup(${exchangeProperty.summarygroup})")
-                .log("step 4 - ${body}")
                 .to("jms:queue:calculated-group");
 
         //compare the calculated group with the current group to see if its changed
@@ -104,8 +101,7 @@ public class CustomerSaleBuilder extends RouteBuilder {
         from("jms:queue:update-customer-group")
                 .bean(UpdateCustomerCreator.class, "updateAccount(${exchangeProperty.id}, ${exchangeProperty.email},${exchangeProperty.firstName}, ${exchangeProperty.lastName})")
                 .multicast()
-                .log("step 5 - ${body}")
-                .to("jms:queue:updated-customer-account", "jms:queue:update-for-vend");
+                .to("jms:queue:updated-customer-account", "jms:queue:updating-for-vend");
 
         //if the group has changed, needs to be updated customer accounts service
         from("jms:queue:updated-customer-account")
@@ -116,26 +112,25 @@ public class CustomerSaleBuilder extends RouteBuilder {
                 // set HTTP method
                 .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
                 .setHeader(Exchange.CONTENT_TYPE).constant("application/json")
-                .log("step 6 - ${body}") 
                 .toD("http://localhost:8086/api/accounts/account/${exchangeProperty.id}")
-                .log("step 7 - ${body}")
                 .to("jms:queue:customer-account-updated");
 
+        //convert from an account object to a customer object for vend
+        from("jms:queue:updating-for-vend")
+                .bean(CustomerGeneratorObject.class, "updatetheCustomer(${body})")
+                .to("jms:queue:update-for-vend");
+
         //updated account needs to be updated on Vend
-//        from("jms:queue:update-for-vend")
-//                // remove headers so they don't get sent to Vend
-//                .removeHeaders("*")
-//                // add authentication token to authorization header
-//                .setHeader("Authorization", constant("Bearer KiQSsELLtocyS2WDN5w5s_jYaBpXa0h2ex1mep1a"))
-//                // marshal to JSON
-//                .marshal().json(JsonLibrary.Gson) // only necessary if the message is an object, not JSON
-//                .setHeader(Exchange.CONTENT_TYPE).constant("application/json")
-//                // set HTTP method
-//                .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
-//                // send it
-//                .to("https://info303otago.vendhq.com/api/2.0/customers/${exchangeProperty.customer.id}")
-//                // store the response
-//                .to("jms:queue:vend-up date-response");
+        from("jms:queue:update-for-vend")
+                // marshal to JSON
+                .marshal().json(JsonLibrary.Gson)
+                .removeHeaders("*")
+                .setHeader(Exchange.CONTENT_TYPE).constant("application/json")
+                .setHeader(Exchange.HTTP_METHOD, constant("PUT"))
+                .setHeader("Authorization", constant("Bearer KiQSsELLtocyS2WDN5w5s_jYaBpXa0h2ex1mep1a"))
+                .toD("https://info303otago.vendhq.com/api/2.0/customers/${exchangeProperty.id}")
+                // store the response
+                .to("jms:queue:vend-up date-response");
     }
 
     //method to prompt for a password using the dialog box

@@ -35,15 +35,6 @@ public class CustomerAccountBuilder extends RouteBuilder {
                 .bean(CustomerCreator.class, "createCustomer(${body.firstName},${body.lastName}, ${body.email})")
                 .to("jms:queue:send-to-vend");
 
-// route to check that the account is actually showing 
-//from("jms:queue:account-for-vend")
-//  // convert to JSON using marshal method
-//  .marshal().json(JsonLibrary.Gson)
-//  // ensure the message body is a string
-//  .convertBodyTo(String.class)
-//  // send to a queue that expects JSON
-//  .to("jms:queue:json");
-//   
         //send the message to vend and catch response in another queue
         from("jms:queue:send-to-vend")
                 // remove headers so they don't get sent to Vend
@@ -66,21 +57,21 @@ public class CustomerAccountBuilder extends RouteBuilder {
                 // convert JSON to Customer object
                 .unmarshal().json(JsonLibrary.Gson, Customer.class)
                 .to("jms:queue:extracted-vend-response");
-        
+
         //convert customer object into an account object
         from("jms:queue:extracted-vend-response")
                 .bean(DomainConverter.class, "customerToAccount(${body})")
                 .to("jms:queue:account-object");
-       
+
         //marshall the account back into json and send to account service 
         from("jms:queue:account-object")
                 //convert into json
                 .marshal().json(JsonLibrary.Gson)
                 //send to accounts service queue
                 .to("jms:queue:account-service");
-        
+
         //send to the accounts service local host
         from("jms:queue:account-service")
-        .to("http://localhost:8086/api/accounts");
+                .to("http://localhost:8086/api/accounts");
     }
 }
